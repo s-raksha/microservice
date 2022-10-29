@@ -1,2 +1,2 @@
 # microservice
- Collectio of microservices
+ collection of microservices
