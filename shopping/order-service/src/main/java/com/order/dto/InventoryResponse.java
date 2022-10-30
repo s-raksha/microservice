@@ -1,16 +1,18 @@
-package com.inventry.dto;
+package com.order.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InventryRequest {
+@Builder
+public class InventoryResponse {
 
 	private String skuCode;
 
-	private Integer quantity;
+	private Boolean isInStock;
 
 }

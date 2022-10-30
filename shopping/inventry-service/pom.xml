@@ -8,11 +8,11 @@
 		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.inventry</groupId>
-	<artifactId>inventry-service</artifactId>
+	<groupId>com.invenotry</groupId>
+	<artifactId>inventory-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>inventry-service</name>
-	<description>Inventryservice</description>
+	<name>inventory-service</name>
+	<description>Inventoryservice</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

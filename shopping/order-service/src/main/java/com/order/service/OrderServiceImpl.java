@@ -1,12 +1,17 @@
 package com.order.service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.order.dto.InventoryResponse;
 import com.order.dto.OrderRequest;
+import com.order.exception.OutOfStockException;
 import com.order.model.Order;
 import com.order.model.OrderLineItem;
 import com.order.repository.OrderRepository;
@@ -17,9 +22,23 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private OrderRepository orderRepository;
 
+	@Autowired
+	private WebClient webClient;
+
 	@Override
 	public void placeOrder(OrderRequest orderRequest) {
-		orderRepository.save(getOrder(orderRequest));
+		Order order = getOrder(orderRequest);
+
+		// check if the product is in stock
+		List<String> skuCodes = order.getOrderLineitems().stream().map(OrderLineItem::getSkuCode).toList();
+		InventoryResponse[] inventoryResponses = webClient.get()
+				.uri("http://localhost:9003/api/inventory/", UriBuilder -> UriBuilder.queryParam("skuCodes", skuCodes).build()).retrieve()
+				.bodyToMono(InventoryResponse[].class).block();
+		Boolean allproductInStiock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::getIsInStock);
+		if(!allproductInStiock)
+			throw new OutOfStockException("Product is not in stock, please try again later");
+		
+		orderRepository.save(order);
 	}
 
 	private Order getOrder(OrderRequest orderRequest) {
