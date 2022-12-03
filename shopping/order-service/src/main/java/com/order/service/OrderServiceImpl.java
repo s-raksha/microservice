@@ -23,7 +23,7 @@ public class OrderServiceImpl implements OrderService {
 	private OrderRepository orderRepository;
 
 	@Autowired
-	private WebClient webClient;
+	private WebClient.Builder webClient;
 
 	@Override
 	public void placeOrder(OrderRequest orderRequest) {
@@ -31,8 +31,8 @@ public class OrderServiceImpl implements OrderService {
 
 		// check if the product is in stock
 		List<String> skuCodes = order.getOrderLineitems().stream().map(OrderLineItem::getSkuCode).toList();
-		InventoryResponse[] inventoryResponses = webClient.get()
-				.uri("http://localhost:9003/api/inventory/", UriBuilder -> UriBuilder.queryParam("skuCodes", skuCodes).build()).retrieve()
+		InventoryResponse[] inventoryResponses = webClient.build().get()
+				.uri("http://inventory-service/api/inventory/", UriBuilder -> UriBuilder.queryParam("skuCodes", skuCodes).build()).retrieve()
 				.bodyToMono(InventoryResponse[].class).block();
 		Boolean allproductInStiock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::getIsInStock);
 		if(!allproductInStiock)
